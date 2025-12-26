@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康経営インタラクティブ・レポート 2025 - 生田産機工業</title>
+    
+    <!-- Chosen Palette: Brilliant Blues & Professional Accents -->
+    <!-- Application Structure Plan: A tab-based SPA dashboard. The structure is designed for user-driven exploration rather than a linear report. Users can select a topic (Dashboard, Lifestyle, Stress, etc.) from a sticky navigation bar to instantly view relevant data. This approach allows users to focus on areas of personal interest, making the dense information from multiple reports more digestible and engaging. The flow starts with a high-level overview (Dashboard with 3-year trends) and then allows deep dives into specific themes, which is a more effective way to explore complex survey data than a long, scrolling infographic. -->
+    <!-- Visualization & Content Choices: 
+        - Key Metrics (KPI Cards): Goal: Inform -> Method: Large-type HTML cards -> Justification: Immediate high-level understanding of the 2025 snapshot.
+        - 3-Year Trends (Line Chart): Goal: Change -> Method: Chart.js Line Chart -> Justification: Clearly shows performance over time for key health indicators, providing crucial context.
+        - Health Checkup Follow-up (Doughnut Charts): Goal: Compare proportions -> Method: Chart.js Doughnut -> Justification: Effectively shows the critical gap between needing and getting a follow-up exam.
+        - Lifestyle Habits (Pie Charts): Goal: Inform proportions -> Method: Chart.js Pie Charts -> Justification: Simple and clear way to represent distributions for body perception, exercise, and sleep.
+        - Stress Levels (Stacked Bar Chart): Goal: Compare composition -> Method: Chart.js Stacked Bar -> Justification: Visualizes the intensity of stress and compares its source (work vs. private life) effectively.
+        - Symptoms (Horizontal Bar Chart): Goal: Organize/Rank -> Method: Chart.js Bar Chart -> Justification: Ranks reported physical symptoms by frequency, making it easy to identify top concerns.
+        - Health Literacy (Stacked 100% Bar Chart): Goal: Compare distributions -> Method: Chart.js Stacked Bar -> Justification: Perfectly suited to show the confidence level distribution for each literacy question, allowing for easy comparison.
+        - Company Support Requests (Horizontal Bar Chart): Goal: Organize/Rank -> Method: Chart.js Bar Chart -> Interaction: Tooltips -> Justification: Ranks what employees want most, providing clear, actionable insights for management.
+        - Library/Method: All charts implemented with Chart.js on Canvas.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f1f5f9; /* Tailwind's slate-100 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            border-bottom-color: #3b82f6; /* Tailwind's blue-500 */
+            color: #2563eb; /* Tailwind's blue-600 */
+            font-weight: 700;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3">
+            <h1 class="text-2xl md:text-3xl font-black text-center text-slate-800">健康経営インタラクティブ・レポート <span class="text-blue-600">2025</span></h1>
+            <p class="text-center text-slate-500 mt-1 text-sm md:text-base">生田産機工業株式会社 従業員健康意識調査</p>
+        </div>
+        <nav class="bg-white border-b border-slate-200">
+            <div class="container mx-auto flex justify-center items-center text-sm md:text-base">
+                <a href="#" class="nav-link active py-3 px-4 md:px-6 border-b-2 border-transparent" data-target="dashboard">ダッシュボード</a>
+                <a href="#" class="nav-link py-3 px-4 md:px-6 border-b-2 border-transparent" data-target="lifestyle">自己認識と生活習慣</a>
+                <a href="#" class="nav-link py-3 px-4 md:px-6 border-b-2 border-transparent" data-target="stress">ストレスと不調</a>
+                <a href="#" class="nav-link py-3 px-4 md:px-6 border-b-2 border-transparent" data-target="literacy">ヘルスリテラシー</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-6">
+        
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="text-center mb-8">
+                <h2 class="text-xl font-bold text-slate-800">主要指標サマリーと3年間の推移</h2>
+                <p class="text-slate-600 mt-1">2025年のキーナンバーと過去3年間のトレンドから、私たちの健康意識の変化を読み解きます。</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <p class="text-base font-semibold text-slate-500">「自分は健康だ」</p>
+                    <p class="text-4xl font-extrabold text-blue-600 mt-2">75.5<span class="text-2xl">%</span></p>
+                    <p class="text-sm text-green-600 mt-1">▲ 過去3年で最高</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <p class="text-base font-semibold text-slate-500">「将来の健康に不安」</p>
+                    <p class="text-4xl font-extrabold text-amber-500 mt-2">58.5<span class="text-2xl">%</span></p>
+                    <p class="text-sm text-slate-500 mt-1">▽ 前年より改善</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <p class="text-base font-semibold text-slate-500">運動習慣あり (週1回以上)</p>
+                    <p class="text-4xl font-extrabold text-red-500 mt-2">47.2<span class="text-2xl">%</span></p>
+                    <p class="text-sm text-red-600 mt-1">▽ 3年連続で低下</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <p class="text-base font-semibold text-slate-500">睡眠での休養感</p>
+                    <p class="text-4xl font-extrabold text-slate-600 mt-2">32.1<span class="text-2xl">%</span></p>
+                    <p class="text-sm text-slate-500 mt-1">「十分」と回答</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-center text-slate-800">健康意識の3年間トレンド (2023-2025)</h3>
+                <div class="chart-container h-[400px] max-h-[450px]">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lifestyle Section -->
+        <section id="lifestyle" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-xl font-bold text-slate-800">自己認識と生活習慣の実態</h2>
+                <p class="text-slate-600 mt-1">自身の健康状態をどう捉え、日々の生活でどのような習慣を送っているかを見ていきます。</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-center text-slate-800">健康診断後の行動</h3>
+                    <p class="text-sm text-center text-slate-500 mb-4">要再検査/治療の指摘があった17名のうち</p>
+                    <div class="chart-container h-[300px]">
+                        <canvas id="followUpActionChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-center text-slate-800">睡眠による休養感</h3>
+                     <p class="text-sm text-center text-slate-500 mb-4">「十分休養がとれている」と回答した割合</p>
+                    <div class="chart-container h-[300px]">
+                        <canvas id="sleepQualityChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-center text-slate-800">自身の体型認識</h3>
+                    <div class="chart-container h-[300px]">
+                        <canvas id="bodyTypePerceptionChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-center text-slate-800">運動習慣 (週1回30分以上)</h3>
+                     <div class="chart-container h-[300px]">
+                        <canvas id="exerciseHabitChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stress Section -->
+        <section id="stress" class="content-section">
+             <div class="text-center mb-8">
+                <h2 class="text-xl font-bold text-slate-800">ストレスレベルと心身の不調</h2>
+                <p class="text-slate-600 mt-1">仕事や私生活におけるストレスの状況と、それが身体や心にどのようなサインとして現れているかを確認します。</p>
+            </div>
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-center text-slate-800">仕事・私生活のストレス度</h3>
+                    <div class="chart-container">
+                        <canvas id="stressLevelChart"></canvas>
+                    </div>
+                </div>
+                 <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-center text-slate-800">感じている身体の不調 TOP5</h3>
+                    <div class="chart-container">
+                        <canvas id="physicalSymptomsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Health Literacy Section -->
+        <section id="literacy" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-xl font-bold text-slate-800">ヘルスリテラシー：健康情報を活かす力</h2>
+                <p class="text-slate-600 mt-1">健康に関する情報を正しく理解し、評価し、活用する能力は、主体的な健康管理に不可欠です。</p>
+            </div>
+             <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-center text-slate-800">健康情報の活用能力 自己評価</h3>
+                <p class="text-sm text-center text-slate-500 mb-4">各項目で「4:できる」「5:十分できる」と回答した人の割合</p>
+                <div class="chart-container">
+                    <canvas id="healthLiteracyChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
+                <h3 class="text-lg font-bold text-center text-slate-800">会社に期待する健康サポート TOP5</h3>
+                 <p class="text-sm text-center text-slate-500 mb-4">従業員が健康増進のために会社に最も望んでいる支援策です。</p>
+                <div class="chart-container">
+                    <canvas id="companySupportChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center mt-8 py-6 border-t border-slate-200">
+        <p class="text-slate-500 text-sm">© 2025 Ikuta Industrial Co., Ltd. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            const wrapLabel = (label, maxLength = 16) => {
+                if (typeof label !== 'string' || label.length <= maxLength) return label;
+                let lines = [];
+                let currentLine = '';
+                label.split('').forEach(char => {
+                    if (currentLine.length >= maxLength) {
+                        lines.push(currentLine);
+                        currentLine = '';
+                    }
+                    currentLine += char;
+                });
+                lines.push(currentLine);
+                return lines;
+            };
+
+            const tooltipTitleCallback = (context) => {
+                const item = context[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                return Array.isArray(label) ? label.join('') : label;
+            };
+            
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: { callbacks: { title: tooltipTitleCallback } },
+                    legend: { position: 'bottom', labels: { font: { size: 12 } } }
+                }
+            };
+            
+            const CHART_COLORS = {
+                blue: 'rgb(59, 130, 246)',
+                amber: 'rgb(245, 158, 11)',
+                red: 'rgb(239, 68, 68)',
+                green: 'rgb(34, 197, 94)',
+                slate: 'rgb(100, 116, 139)',
+                lightblue: 'rgb(14, 165, 233)',
+            };
+
+            new Chart(document.getElementById('trendsChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2023', '2024', '2025'],
+                    datasets: [
+                        { label: '「健康だと思う」割合', data: [68.4, 65.6, 75.5], borderColor: CHART_COLORS.blue, backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.1 },
+                        { label: '「健康不安がある」割合', data: [39.5, 63.9, 58.5], borderColor: CHART_COLORS.amber, backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.1 },
+                        { label: '運動習慣がある割合', data: [60.5, 50.8, 47.2], borderColor: CHART_COLORS.red, backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.1 }
+                    ]
+                },
+                options: { ...commonOptions, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: value => value + '%' } } } }
+            });
+
+            new Chart(document.getElementById('followUpActionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['再検査に行く', '再検査に行かない'],
+                    datasets: [{ data: [52.9, 47.1], backgroundColor: [CHART_COLORS.blue, CHART_COLORS.red], borderWidth: 2, borderColor: '#fff' }]
+                },
+                options: { ...commonOptions }
+            });
+            
+            new Chart(document.getElementById('sleepQualityChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['十分とれている', 'あまりとれていない', '全くとれていない'],
+                    datasets: [{ data: [32.1, 58.5, 9.4], backgroundColor: [CHART_COLORS.green, CHART_COLORS.amber, CHART_COLORS.red], borderWidth: 2, borderColor: '#fff' }]
+                },
+                options: { ...commonOptions }
+            });
+
+            new Chart(document.getElementById('bodyTypePerceptionChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['太り気味', '普通', '痩せ気味'],
+                    datasets: [{ data: [56.6, 41.5, 1.9], backgroundColor: [CHART_COLORS.amber, CHART_COLORS.blue, CHART_COLORS.green], borderWidth: 2, borderColor: '#fff' }]
+                },
+                options: { ...commonOptions }
+            });
+
+            new Chart(document.getElementById('exerciseHabitChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['運動習慣あり', '運動習慣なし'],
+                    datasets: [{ data: [47.2, 52.8], backgroundColor: [CHART_COLORS.blue, CHART_COLORS.slate], borderWidth: 2, borderColor: '#fff' }]
+                },
+                options: { ...commonOptions }
+            });
+
+            new Chart(document.getElementById('stressLevelChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['感じる', 'まあまあ感じる', 'あまり感じない', '感じない'],
+                    datasets: [
+                        { label: '仕事', data: [11.3, 49.1, 35.8, 3.8], backgroundColor: CHART_COLORS.blue },
+                        { label: '私生活', data: [5.7, 34, 49.1, 11.3], backgroundColor: CHART_COLORS.lightblue }
+                    ]
+                },
+                options: { ...commonOptions, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: value => value + '%' } } } }
+            });
+
+            new Chart(document.getElementById('physicalSymptomsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['肩こり', '腰痛', '目の疲れ', '頭痛', '倦怠感'],
+                    datasets: [{ label: '回答者数', data: [31, 23, 19, 9, 8], backgroundColor: [CHART_COLORS.blue, CHART_COLORS.lightblue, CHART_COLORS.slate, 'rgb(156, 163, 175)', 'rgb(203, 213, 225)'], borderRadius: 4 }]
+                },
+                options: { ...commonOptions, indexAxis: 'y', plugins: { ...commonOptions.plugins, legend: { display: false } } }
+            });
+
+            new Chart(document.getElementById('healthLiteracyChart'), {
+                type: 'bar',
+                data: {
+                    labels: [wrapLabel('情報を理解し人に伝える'), wrapLabel('情報の信頼性を判断する'), wrapLabel('情報をもとに行動を決める')],
+                    datasets: [{ label: '回答割合', data: [22.7, 16.9, 26.5], backgroundColor: CHART_COLORS.blue, borderRadius: 4 }]
+                },
+                options: { ...commonOptions, plugins: { ...commonOptions.plugins, legend: { display: false } }, scales: { y: { max: 100, ticks: { callback: value => value + '%' } } } }
+            });
+
+            new Chart(document.getElementById('companySupportChart'), {
+                type: 'bar',
+                data: {
+                    labels: [wrapLabel('費用補助(人間ドック,ジム)'), wrapLabel('運動の機会創出'), wrapLabel('健康的な昼食の提供'), wrapLabel('時間単位の有給取得'), wrapLabel('健康に関する情報提供')],
+                    datasets: [{ label: '回答者数', data: [23, 19, 10, 8, 7], backgroundColor: [CHART_COLORS.blue, CHART_COLORS.lightblue, CHART_COLORS.slate, 'rgb(156, 163, 175)', 'rgb(203, 213, 225)'], borderRadius: 4 }]
+                },
+                options: { ...commonOptions, indexAxis: 'y', plugins: { ...commonOptions.plugins, legend: { display: false } } }
+            });
+        });
+    </script>
+</body>
+</html>
